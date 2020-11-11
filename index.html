@@ -16,6 +16,12 @@
       crossorigin="anonymous"
     />
 
+    <!-- Font Awesome -->
+    <link
+      rel="stylesheet"
+      href="https://use.fontawesome.com/releases/v5.11.2/css/all.css"
+    />
+
     <title>The New Amazon</title>
 
     <head>
@@ -61,40 +67,48 @@
   </head>
   <body>
     <nav class="navbar navbar-expand-lg navbar-light bg-light mb-4">
-        <a class="navbar-brand" href="./index.html">The New Amazon</a>
-        <button
-          class="navbar-toggler"
-          type="button"
-          data-toggle="collapse"
-          data-target="#navbarNav"
-          aria-controls="navbarNav"
-          aria-expanded="false"
-          aria-label="Toggle navigation"
-        >
-          <span class="navbar-toggler-icon"></span>
-        </button>
-        <div class="collapse navbar-collapse" id="navbarNav">
-          <ul class="navbar-nav">
-            <li class="nav-item active">
-              <a class="nav-link" href="./index.html"
-                >Home <span class="sr-only">(current)</span></a
-              >
-            </li>
-            <li class="nav-item">
-              <a class="nav-link" href="./backoffice.html">Backoffice</a>
-            </li>
-          </ul>
-        </div>
-      </nav>
-      <div class="container text-center">
-        <h1>STRIVE CRUD AGENDA</h1>
-        <h2 class="my-5">Amazon Products</h2>
-        <div class="col-md-6 offset-md-3">
-          <!-- <div id="currentEvents"></div> -->
-          <ul class="list-group list-group-flush" id="productList"></ul>
-        </div>
+      <a class="navbar-brand" href="./index.html">The New Amazon</a>
+      <button
+        class="navbar-toggler"
+        type="button"
+        data-toggle="collapse"
+        data-target="#navbarNav"
+        aria-controls="navbarNav"
+        aria-expanded="false"
+        aria-label="Toggle navigation"
+      >
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <div class="collapse navbar-collapse" id="navbarNav">
+        <ul class="navbar-nav">
+          <li class="nav-item active">
+            <a class="nav-link" href="./index.html"
+              >Home <span class="sr-only">(current)</span></a
+            >
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="./backoffice.html">Back Office</a>
+          </li>
+        </ul>
       </div>
-  
+      <div class = "cart-container d-flex">
+                <i class="fas fa-shopping-cart fa-2x mr-3"></i>
+                    <ul class = "cart-items mr-3 ">
+                
+                      </ul>
+                    </div>
+    </nav>
+    <div class="container text-center">
+      <h1>The New Amazon</h1>
+      <form class="form-inline my-2 my-lg-0">
+        <input class="form-control mr-sm-2" type="search" placeholder="Search" aria-label="Search">
+        <button class="btn btn-outline-success my-2 my-sm-0 search-btn" type="submit">Search</button>
+      </form>
+      <div class="row container-products" id="product-list">
+        <!-- <div id="currentEvents"></div> -->
+      </div>
+    </div>
+
     <!-- Optional JavaScript; choose one of the two! -->
 
     <!-- Option 1: jQuery and Bootstrap Bundle (includes Popper) -->
@@ -115,26 +129,64 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.5.3/dist/js/bootstrap.min.js" integrity="sha384-w1Q4orYjBQndcko6MimVbzY0tgp4pWB4lZ7lr30WKz0vr/aWKhXdBNmNb5D92v7s" crossorigin="anonymous"></script>
     -->
 
+    <!-- Font Awesome -->
+
+    <script
+      src="https://kit.fontawesome.com/6f47b95a54.js"
+      crossorigin="anonymous"
+    ></script>
+
+    <!-- My JS -->
+
     <script>
-        window.onload = async () => {
-            const url = "https://striveschool-api.herokuapp.com/api/product/";
-                try {
-                  let response = await fetch(url, {
-                      method: "GET",
-                      headers: ({
-                        "Authorization": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI1ZmFiYzRkMjRiY2RlMTAwMTc2MTZhODMiLCJpYXQiOjE2MDUwOTI1NjIsImV4cCI6MTYwNjMwMjE2Mn0.arJqVkpzT0MeHAgQP3AYhkG9rGTJHbVwdiXIuPiok20"
-                          }),
-                        });
-                let products = await response.json(); 
-                if (products.length > 0) {
+      window.onload = async () => {
+        let productLibrary = [];
+        const url = "https://striveschool-api.herokuapp.com/api/product/";
+        try {
+          let response = await fetch(url, {
+            method: "GET",
+            headers: {
+              Authorization:
+                "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI1ZmFiYzRkMjRiY2RlMTAwMTc2MTZhODMiLCJpYXQiOjE2MDUwOTI1NjIsImV4cCI6MTYwNjMwMjE2Mn0.arJqVkpzT0MeHAgQP3AYhkG9rGTJHbVwdiXIuPiok20",
+            },
+          });
+          let products = await response.json();
+          if (products.length > 0) {
             products.forEach((e) => {
-              let listItem = document.createElement("li");
-              listItem.classList.add(
-                "list-group-item",
-                "d-flex",
-                "justify-content-between"
-              );
-              listItem.innerHTML = `<span>${e.name}</span><span>${e.price}$</span>`;
+              let listItem = document.createElement("div");
+              listItem.classList.add("col-md-4");
+              listItem.classList.add("product-card");
+              listItem.innerHTML = `<img src="${e.imageUrl}" style="height:200px;"/>
+                <div class="card-body" style="height: 400px; overflow-y: auto">
+                <p class="card-text">
+                <div>
+                <div><h6 class ="product-name">${e.name}</h6></div>
+                <div><strong>Brand:</strong> ${e.brand}</div>
+                <div>${e.description}</div>
+                <div><h6 class ="product-price">£${e.price}</h6></div>
+            </div>
+                
+            </p>
+            <div
+                class="d-flex justify-content-between align-items-center"
+            >
+                <div class="btn-group">
+                <button
+                    type="button"
+                    class="btn btn-sm btn-outline-secondary btnHide" onclick="hideToggle()"
+                >
+                    Hide
+                </button>
+                <button
+                    type="button"
+                    class="btn btn-sm btn-outline-secondary onclick="addToCart(event)"
+                >
+                Add to Cart<span><i class="fas fa-cart-plus ml-3"></i></span>
+                </button>
+                </div>
+                <small class="text-muted">Add on ${e.createdAt}</small>
+            </div>
+            </div>`;
               productList.appendChild(listItem);
             });
           } else {
@@ -142,6 +194,45 @@
           }
         } catch (error) {
           console.log(error);
+        }
+      };
+
+const shoppingCartItems = document.querySelector(".cart-items");
+const productList = document.querySelector("#product-list");
+
+const findProduct = (productName) => {
+return bookLibrary.find(e => e.name === productName)
+}
+
+const btn = document.querySelector(".search-btn");
+btn.addEventListener("click", function (event) {
+  event.preventDefault();
+  const input = document.querySelector(".form-control").value;
+  // console.log(input)
+  // bookResults.querySelectorAll("*").forEach((element) => element.remove());
+  productList.innerHTML="" //same as above
+  const filteredList = productLibrary.filter(item => item.title.toLowerCase().includes(input.toLowerCase())
+  );
+  // console.log(filteredLibrary)
+  // console.log(bookLibrary)
+  filteredList.forEach((item) => createItem(item));
+});
+
+const addToCart = (e) => {
+let productName = document.getElementsByClassName("product-name")
+let productPrice = document.getElementsByClassName("product-price")
+const li = document.createElement("li");
+li.innerHTML = ` <li>${productName}  ${productPrice}<span class="close">&times;</span></li>`;
+shoppingCartItems.appendChild(li);
+  };
+
+      const hideToggle = () => {
+        let allCards = document.querySelectorAll(".product-card");
+        let btnsHide = document.querySelectorAll(".btnHide");
+        for (let i = 0; i < btnsHide.length; i++) {
+          btnsHide[i].onclick = function () {
+            allCards[i].style.display = "none";
+          };
         }
       };
     </script>
