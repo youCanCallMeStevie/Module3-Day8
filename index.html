@@ -54,6 +54,19 @@
                 Today you have to implement:
                 - A backoffice page, where you can insert the product by specifying the parameters
                 - A front page, where the user can see the available products
+
+
+                - In the backoffice page
+                a) Add a button and the functionality to EDIT a single product ( PUT  endpoint/{id})
+                b) Add a button and the functionality to DELETE a single product ( DELETE endpoint/{id})
+                c) Add validation to the product creation/edit form
+                d) Display an error message if something goes wrong
+            - In the front page
+                a) Add a loader while waiting for the product to load
+                b) Add a link on each item to go to a detail page
+            - Create a new detail page where you are going to display the item information
+
+            
                 ------ N.B. ------
                 Tokens duration is set to 14 days. Whenever you'll need to obtain a new one you can send the following request:
                 
@@ -91,18 +104,26 @@
           </li>
         </ul>
       </div>
-      <div class = "cart-container d-flex">
-                <i class="fas fa-shopping-cart fa-2x mr-3"></i>
-                    <ul class = "cart-items mr-3 ">
-                
-                      </ul>
-                    </div>
+      <div class="cart-container d-flex">
+        <i class="fas fa-shopping-cart fa-2x mr-3"></i>
+        <ul class="cart-items mr-3"></ul>
+      </div>
     </nav>
     <div class="container text-center">
       <h1>The New Amazon</h1>
       <form class="form-inline my-2 my-lg-0">
-        <input class="form-control mr-sm-2" type="search" placeholder="Search" aria-label="Search">
-        <button class="btn btn-outline-success my-2 my-sm-0 search-btn" type="submit">Search</button>
+        <input
+          class="form-control mr-sm-2"
+          type="search"
+          placeholder="Search"
+          aria-label="Search"
+        />
+        <button
+          class="btn btn-outline-success my-2 my-sm-0 search-btn"
+          type="submit"
+        >
+          Search
+        </button>
       </form>
       <div class="row container-products" id="product-list">
         <!-- <div id="currentEvents"></div> -->
@@ -140,7 +161,10 @@
 
     <script>
       window.onload = async () => {
-        let productLibrary = [];
+        createProduct();
+      };
+
+      createProduct = async () => {
         const url = "https://striveschool-api.herokuapp.com/api/product/";
         try {
           let response = await fetch(url, {
@@ -151,31 +175,35 @@
             },
           });
           let products = await response.json();
+          console.log(products);
           if (products.length > 0) {
             products.forEach((e) => {
               let listItem = document.createElement("div");
               listItem.classList.add("col-md-4");
               listItem.classList.add("product-card");
-              listItem.innerHTML = `<img src="${e.imageUrl}" style="height:200px;"/>
-                <div class="card-body" style="height: 400px; overflow-y: auto">
+              listItem.innerHTML = `<img src="${
+                e.imageUrl
+              }" style="height:200px;"/>
+            <div class="card-body" style="height: 400px; overflow-y: auto">
                 <p class="card-text">
-                <div>
+              <div>
                 <div><h6 class ="product-name">${e.name}</h6></div>
                 <div><strong>Brand:</strong> ${e.brand}</div>
                 <div>${e.description}</div>
                 <div><h6 class ="product-price">£${e.price}</h6></div>
-            </div>
-                
-            </p>
-            <div
-                class="d-flex justify-content-between align-items-center"
-            >
+              </div>
+                </p>
+            <div class="d-flex justify-content-between align-items-center">
                 <div class="btn-group">
+                  <a class="btn btn-info" href="detail.html?id=${
+                    e._id
+                  }">VIEW DETAILS</a>
+                </div>
+  
                 <button
                     type="button"
                     class="btn btn-sm btn-outline-secondary btnHide" onclick="hideToggle()"
-                >
-                    Hide
+                >Hide
                 </button>
                 <button
                     type="button"
@@ -184,7 +212,10 @@
                 Add to Cart<span><i class="fas fa-cart-plus ml-3"></i></span>
                 </button>
                 </div>
-                <small class="text-muted">Add on ${e.createdAt}</small>
+                <small class="text-muted">Add on ${
+                  e.createdAt.split(".")[0]
+                }</small>
+
             </div>
             </div>`;
               productList.appendChild(listItem);
@@ -197,34 +228,54 @@
         }
       };
 
-const shoppingCartItems = document.querySelector(".cart-items");
-const productList = document.querySelector("#product-list");
+      const shoppingCartItems = document.querySelector(".cart-items");
+      const productList = document.querySelector("#product-list");
 
-const findProduct = (productName) => {
-return bookLibrary.find(e => e.name === productName)
-}
+      const findProduct = (productName) => {
+        return bookLibrary.find((e) => e.name === productName);
+      };
 
-const btn = document.querySelector(".search-btn");
-btn.addEventListener("click", function (event) {
-  event.preventDefault();
-  const input = document.querySelector(".form-control").value;
-  // console.log(input)
-  // bookResults.querySelectorAll("*").forEach((element) => element.remove());
-  productList.innerHTML="" //same as above
-  const filteredList = productLibrary.filter(item => item.title.toLowerCase().includes(input.toLowerCase())
-  );
-  // console.log(filteredLibrary)
-  // console.log(bookLibrary)
-  filteredList.forEach((item) => createItem(item));
-});
+      let productLibrary = [];
+      const getProducts = async () => {
+        fetch(url, {
+          method: "GET",
+          headers: {
+            Authorization:
+              "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI1ZmFiYzRkMjRiY2RlMTAwMTc2MTZhODMiLCJpYXQiOjE2MDUwOTI1NjIsImV4cCI6MTYwNjMwMjE2Mn0.arJqVkpzT0MeHAgQP3AYhkG9rGTJHbVwdiXIuPiok20",
+          },
+        });
+        let productList = await response.json();
+        console.log(productList);
+        productLibrary = productList;
+        productList.forEach((item) => createProduct(item));
+        // bookResults
+        //   .querySelectorAll("*")
+        //   .forEach((element) => element.remove());
+      };
 
-const addToCart = (e) => {
-let productName = document.getElementsByClassName("product-name")
-let productPrice = document.getElementsByClassName("product-price")
-const li = document.createElement("li");
-li.innerHTML = ` <li>${productName}  ${productPrice}<span class="close">&times;</span></li>`;
-shoppingCartItems.appendChild(li);
-  };
+      const btn = document.querySelector(".search-btn");
+      btn.addEventListener("click", function (event) {
+        event.preventDefault();
+        const input = document.querySelector(".form-control").value;
+        console.log(input);
+        // console.log(input)
+        // bookResults.querySelectorAll("*").forEach((element) => element.remove());
+        productList.innerHTML = ""; //same as above
+        const filteredList = productLibrary.filter((item) =>
+          item.title.toLowerCase().includes(input.toLowerCase())
+        );
+        // console.log(filteredLibrary)
+        // console.log(bookLibrary)
+        filteredList.forEach((item) => createProduct(item));
+      });
+
+      const addToCart = (e) => {
+        let productName = document.getElementsByClassName("product-name");
+        let productPrice = document.getElementsByClassName("product-price");
+        const li = document.createElement("li");
+        li.innerHTML = ` <li>${productName}  ${productPrice}<span class="close">&times;</span></li>`;
+        shoppingCartItems.appendChild(li);
+      };
 
       const hideToggle = () => {
         let allCards = document.querySelectorAll(".product-card");

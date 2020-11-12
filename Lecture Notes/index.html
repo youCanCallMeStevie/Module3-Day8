@@ -48,14 +48,13 @@
       <h1>STRIVE CRUD AGENDA</h1>
       <h2 class="my-5">Current events</h2>
       <div class="col-md-6 offset-md-3">
-        <!-- <div id="currentEvents"></div> -->
         <ul class="list-group list-group-flush" id="currentEvents"></ul>
       </div>
     </div>
 
     <script>
       window.onload = async () => {
-        const url = "https://striveschool.herokuapp.com/api/agenda/";
+        const url = "https://striveschool-api.herokuapp.com/api/agenda/";
         let currentEvents = document.querySelector("#currentEvents");
 
         try {
@@ -70,7 +69,14 @@
                 "d-flex",
                 "justify-content-between"
               );
-              listItem.innerHTML = `<span>${e.name}</span><span>${e.price}$</span>`;
+              listItem.innerHTML = `
+              <span>${e.name}</span>
+              <span>
+                <span>${e.price}$</span>
+                <span>
+                  <a class="btn btn-info" href="detail.html?id=${e._id}">VIEW DETAILS</a>
+                </span>
+              </span>`;
               currentEvents.appendChild(listItem);
             });
           } else {
