@@ -80,7 +80,6 @@
           });
 
           let event = await response.json(); // transforming the response body in an usable object, asyncronous operation!
-
           let element = document.createElement("p");
           element.innerHTML = `${event.name} : ${event.description}`;
 

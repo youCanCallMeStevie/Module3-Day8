@@ -111,7 +111,7 @@
     </nav>
     <div class="container text-center">
       <h1>The New Amazon</h1>
-      <form class="form-inline my-2 my-lg-0">
+      <div class="form-inline my-2 my-lg-0">
         <input
           class="form-control mr-sm-2"
           type="search"
@@ -124,7 +124,7 @@
         >
           Search
         </button>
-      </form>
+      </div>
       <div class="row container-products" id="product-list">
         <!-- <div id="currentEvents"></div> -->
       </div>
@@ -160,122 +160,94 @@
     <!-- My JS -->
 
     <script>
-      window.onload = async () => {
-        createProduct();
-      };
+      const productResults = document.querySelector(".container-products");
 
-      createProduct = async () => {
-        const url = "https://striveschool-api.herokuapp.com/api/product/";
-        try {
-          let response = await fetch(url, {
-            method: "GET",
-            headers: {
-              Authorization:
-                "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI1ZmFiYzRkMjRiY2RlMTAwMTc2MTZhODMiLCJpYXQiOjE2MDUwOTI1NjIsImV4cCI6MTYwNjMwMjE2Mn0.arJqVkpzT0MeHAgQP3AYhkG9rGTJHbVwdiXIuPiok20",
-            },
-          });
-          let products = await response.json();
-          console.log(products);
-          if (products.length > 0) {
-            products.forEach((e) => {
-              let listItem = document.createElement("div");
-              listItem.classList.add("col-md-4");
-              listItem.classList.add("product-card");
-              listItem.innerHTML = `<img src="${
-                e.imageUrl
-              }" style="height:200px;"/>
-            <div class="card-body" style="height: 400px; overflow-y: auto">
-                <p class="card-text">
-              <div>
-                <div><h6 class ="product-name">${e.name}</h6></div>
-                <div><strong>Brand:</strong> ${e.brand}</div>
-                <div>${e.description}</div>
-                <div><h6 class ="product-price">£${e.price}</h6></div>
-              </div>
-                </p>
-            <div class="d-flex justify-content-between align-items-center">
-                <div class="btn-group">
-                  <a class="btn btn-info" href="detail.html?id=${
-                    e._id
-                  }">VIEW DETAILS</a>
-                </div>
-  
-                <button
-                    type="button"
-                    class="btn btn-sm btn-outline-secondary btnHide" onclick="hideToggle()"
-                >Hide
-                </button>
-                <button
-                    type="button"
-                    class="btn btn-sm btn-outline-secondary onclick="addToCart(event)"
-                >
-                Add to Cart<span><i class="fas fa-cart-plus ml-3"></i></span>
-                </button>
-                </div>
-                <small class="text-muted">Add on ${
-                  e.createdAt.split(".")[0]
-                }</small>
+      renderProducts = (products) => {
+        products.forEach((e) => {
+          let listItem = document.createElement("div");
+          listItem.classList.add("col-md-4");
+          listItem.classList.add("product-card");
+          listItem.innerHTML = `<img src="${e.imageUrl}" style="height:200px;"/>
+                    <div class="card-body" style="height: 400px; overflow-y: auto">
+                        <p class="card-text">
+                      <div>
+                        <div><h6 class ="product-name">${e.name}</h6></div>
+                        <div class ="brand"><strong>Brand:</strong> ${
+                          e.brand
+                        }</div>
+                        <div>${e.description}</div>
+                        <div><h6 class ="product-price">£${e.price}</h6></div>
+                      </div>
+                        </p>
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div class="btn-group">
+                          <a class="btn btn-info" href="detail.html?id=${
+                            e._id
+                          }">VIEW DETAILS</a>
+                        </div>
 
-            </div>
-            </div>`;
-              productList.appendChild(listItem);
-            });
-          } else {
-            productList.innerHTML = "<h1>No Products to Show</h1>";
-          }
-        } catch (error) {
-          console.log(error);
-        }
+                        <button
+                            type="button"
+                            class="btn btn-sm btn-outline-secondary btnHide" onclick="hideToggle()"
+                        >Hide
+                        </button>
+                        <button
+                            type="button"
+                            class="btn btn-sm btn-outline-secondary onclick="addToCart(event)"
+                        >
+                        Add to Cart<span><i class="fas fa-cart-plus ml-3"></i></span>
+                        </button>
+                        </div>
+                        <small class="text-muted">Add on ${
+                          e.createdAt.split("T")[0]
+                        }</small>
+
+                    </div>
+                    </div>`;
+          productList.appendChild(listItem);
+        });
       };
 
       const shoppingCartItems = document.querySelector(".cart-items");
       const productList = document.querySelector("#product-list");
 
-      const findProduct = (productName) => {
-        return bookLibrary.find((e) => e.name === productName);
-      };
-
       let productLibrary = [];
+
+      const clearContainer = (productList) => {
+        //use function for new data
+        productResults.innerHTML = "";
+        // productResults.querySelectorAll("*").forEach((node) => node.remove()); //same as above
+      };
+
       const getProducts = async () => {
-        fetch(url, {
-          method: "GET",
-          headers: {
-            Authorization:
-              "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI1ZmFiYzRkMjRiY2RlMTAwMTc2MTZhODMiLCJpYXQiOjE2MDUwOTI1NjIsImV4cCI6MTYwNjMwMjE2Mn0.arJqVkpzT0MeHAgQP3AYhkG9rGTJHbVwdiXIuPiok20",
-          },
-        });
-        let productList = await response.json();
-        console.log(productList);
-        productLibrary = productList;
-        productList.forEach((item) => createProduct(item));
-        // bookResults
-        //   .querySelectorAll("*")
-        //   .forEach((element) => element.remove());
+        const url = "https://striveschool-api.herokuapp.com/api/product/";
+        try {
+          productLibrary = await fetch(url, {
+            method: "GET",
+            headers: {
+              Authorization:
+                "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI1ZmFiYzRkMjRiY2RlMTAwMTc2MTZhODMiLCJpYXQiOjE2MDUwOTI1NjIsImV4cCI6MTYwNjMwMjE2Mn0.arJqVkpzT0MeHAgQP3AYhkG9rGTJHbVwdiXIuPiok20",
+            },
+          }).then((res) => res.json());
+          renderProducts(productLibrary);
+        } catch (error) {
+          console.log(error);
+        }
       };
 
-      const btn = document.querySelector(".search-btn");
-      btn.addEventListener("click", function (event) {
-        event.preventDefault();
-        const input = document.querySelector(".form-control").value;
-        console.log(input);
-        // console.log(input)
-        // bookResults.querySelectorAll("*").forEach((element) => element.remove());
-        productList.innerHTML = ""; //same as above
+      const input = document.querySelector(".form-control");
+
+      const handleProductSearch = () => {
         const filteredList = productLibrary.filter((item) =>
-          item.title.toLowerCase().includes(input.toLowerCase())
+          item.name.toLowerCase().includes(input.value.toLowerCase())
         );
-        // console.log(filteredLibrary)
-        // console.log(bookLibrary)
-        filteredList.forEach((item) => createProduct(item));
-      });
-
-      const addToCart = (e) => {
-        let productName = document.getElementsByClassName("product-name");
-        let productPrice = document.getElementsByClassName("product-price");
-        const li = document.createElement("li");
-        li.innerHTML = ` <li>${productName}  ${productPrice}<span class="close">&times;</span></li>`;
-        shoppingCartItems.appendChild(li);
+        clearContainer();
+        renderProducts(filteredList);
       };
+
+      const searchButton = document.querySelector(".search-btn");
+      searchButton.addEventListener("click", () => handleProductSearch());
+      input.addEventListener("keyup", () => handleProductSearch());
 
       const hideToggle = () => {
         let allCards = document.querySelectorAll(".product-card");
@@ -286,6 +258,18 @@
           };
         }
       };
+
+      window.onload = async () => {
+        getProducts();
+      };
     </script>
   </body>
 </html>
+
+<!-- const addToCart = (e) => {
+  let productName = document.getElementsByClassName("product-name");
+  let productPrice = document.getElementsByClassName("product-price");
+  const li = document.createElement("li");
+  li.innerHTML = ` <li>${productName}  ${productPrice}<span class="close">&times;</span></li>`;
+  shoppingCartItems.appendChild(li);
+}; -->
